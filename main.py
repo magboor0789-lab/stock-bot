@@ -1,20 +1,27 @@
+from telegram import Update
+from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+import os
 
-import asyncio
+BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-from aiogram import Bot, Dispatcher
-from config import BOT_TOKEN
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "🚀 بوت الأسهم الاحترافي يعمل بنجاح!\n\n"
+        "الأوامر:\n"
+        "/start\n"
+        "/help"
+    )
 
-from handlers.commands import router
-from services.alert_engine import start_background_scanner
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(
+        "📊 البوت جاهز للعمل."
+    )
 
-bot = Bot(token=BOT_TOKEN)
-dp = Dispatcher()
+app = ApplicationBuilder().token(BOT_TOKEN).build()
 
-dp.include_router(router)
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CommandHandler("help", help_command))
 
-async def main():
-    asyncio.create_task(start_background_scanner(bot))
-    await dp.start_polling(bot)
+print("BOT STARTED")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+app.run_polling()
