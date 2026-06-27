@@ -1,27 +1,21 @@
-from telegram import Update
-from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+from aiogram import Bot, Dispatcher, executor, types
 import os
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🚀 بوت الأسهم الاحترافي يعمل بنجاح!\n\n"
-        "الأوامر:\n"
-        "/start\n"
-        "/help"
-    )
+bot = Bot(token=BOT_TOKEN)
+dp = Dispatcher(bot)
 
-async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "📊 البوت جاهز للعمل."
-    )
 
-app = ApplicationBuilder().token(BOT_TOKEN).build()
+@dp.message_handler(commands=['start'])
+async def start(message: types.Message):
+    await message.reply("✅ البوت يعمل بنجاح")
 
-app.add_handler(CommandHandler("start", start))
-app.add_handler(CommandHandler("help", help_command))
 
-print("BOT STARTED")
+@dp.message_handler(commands=['help'])
+async def help_command(message: types.Message):
+    await message.reply("الأوامر:\n/start\n/help")
 
-app.run_polling()
+
+if __name__ == "__main__":
+    executor.start_polling(dp, skip_updates=True)
